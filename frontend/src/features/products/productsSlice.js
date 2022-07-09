@@ -26,7 +26,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.data = state.data.concat(action.payload);
+        state.data = action.payload;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
@@ -35,4 +35,6 @@ const productsSlice = createSlice({
   },
 });
 
-export default productsSlice;
+export const selectAllProducts = (state) => state.products.data;
+
+export default productsSlice.reducer;

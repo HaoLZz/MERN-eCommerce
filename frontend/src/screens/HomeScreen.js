@@ -1,19 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Col, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import Product from '../components/Product';
-import axios from 'axios';
+import {
+  fetchProducts,
+  selectAllProducts,
+} from '../features/products/productsSlice';
 
 const HomeScreen = () => {
-  const [products, setProducts] = useState([]);
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const { data } = await axios.get('/api/products');
+  const products = useSelector(selectAllProducts);
+  const dispatch = useDispatch();
+  const fetchStatus = useSelector((state) => state.products.status);
+  const error = useSelector((state) => state.products.error);
 
-      setProducts(data);
-    };
-    console.log('GET req sent');
-    fetchProducts();
-  }, []);
+  useEffect(() => {
+    if (fetchStatus === 'idle') {
+      dispatch(fetchProducts());
+    }
+  }, [fetchStatus, dispatch]);
+
   return (
     <>
       <h1>Latest Products</h1>
