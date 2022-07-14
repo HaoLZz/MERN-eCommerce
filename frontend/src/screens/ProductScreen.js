@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchProductById,
@@ -20,13 +20,14 @@ import Message from '../components/Message';
 
 const ProductScreen = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const product = useSelector((state) => selectProductById(state, id));
   const dispatch = useDispatch();
 
   const [fetchProductStatus, setFetchProductStatus] = useState('idle');
   const [error, setError] = useState(null);
 
-  const [qty, setQty] = useState(0);
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -43,6 +44,10 @@ const ProductScreen = () => {
     };
     fetchProduct();
   }, [dispatch, id, fetchProductStatus]);
+
+  const addToCartHandler = () => {
+    navigate(`/cart/${id}?qty=${qty}`);
+  };
 
   return (
     <>
@@ -103,6 +108,7 @@ const ProductScreen = () => {
                       <Col>
                         <Form.Control
                           as="select"
+                          value={qty}
                           onChange={(e) => setQty(e.target.value)}
                         >
                           {[...Array(product.countInStock).keys()].map((i) => (
@@ -120,6 +126,7 @@ const ProductScreen = () => {
                   <Button
                     className="btn-block"
                     type="button"
+                    onClick={addToCartHandler}
                     disabled={product.countInStock === 0}
                   >
                     Add To Cart
