@@ -17,19 +17,13 @@ const cartSlice = createSlice({
       reducer(state, action) {
         const { itemToAdd } = action.payload;
         // Check if the item is already in the cart
-        let existingProductIndex;
-        const existingProduct = state.cartItems.find((item, index) => {
-          if (item.product === itemToAdd.product) {
-            existingProductIndex = index;
-            return true;
-          } else {
-            return false;
-          }
-        });
-        if (existingProduct) {
-          state.cartItems[existingProductIndex].qty += itemToAdd.qty;
-        } else {
+        const existingProductIndex = state.cartItems.findIndex(
+          (item) => item.product === itemToAdd.product,
+        );
+        if (existingProductIndex === -1) {
           state.cartItems.push(itemToAdd);
+        } else {
+          state.cartItems[existingProductIndex].qty += itemToAdd.qty;
         }
         // Store Shopping cart items in local storage
         localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
@@ -49,9 +43,24 @@ const cartSlice = createSlice({
         };
       },
     },
+    updateItemQty(state, action) {
+      const { newQty, product } = action.payload;
+      // Find the index of product needs to be updated
+      const existingProductIndex = state.cartItems.findIndex(
+        (item) => item.product === product,
+      );
+
+      if (existingProductIndex !== -1) {
+        state.cartItems[existingProductIndex].qty = parseInt(newQty);
+      } else {
+        console.error('Product is no longer in the cart');
+      }
+
+      localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
+    },
   },
 });
 
 export default cartSlice.reducer;
 
-export const { addItemToCart } = cartSlice.actions;
+export const { addItemToCart, updateItemQty } = cartSlice.actions;

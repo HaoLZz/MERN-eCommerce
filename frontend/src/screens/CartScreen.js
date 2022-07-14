@@ -10,13 +10,19 @@ import {
   Card,
   ListGroupItem,
 } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateItemQty } from '../features/cart/cartSlice';
 import Message from '../components/Message';
 
 const CartScreen = () => {
   const { id, qty } = useParams();
 
+  const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
+
+  const updateQtyHandler = (newQty, product) => {
+    dispatch(updateItemQty({ newQty, product }));
+  };
 
   return (
     <Row>
@@ -45,7 +51,9 @@ const CartScreen = () => {
                       min="1"
                       max={item.countInStock}
                       value={item.qty}
-                      onChange={(f) => f}
+                      onChange={(e) =>
+                        updateQtyHandler(e.target.value, item.product)
+                      }
                     ></Form.Control>
                   </Col>
                   <Col md={2}>
