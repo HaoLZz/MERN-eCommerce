@@ -58,9 +58,25 @@ const cartSlice = createSlice({
 
       localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
     },
+    removeItemFromCart(state, action) {
+      const product = action.payload;
+      // Find the index of product needs to be removed
+      const existingProductIndex = state.cartItems.findIndex(
+        (item) => item.product === product,
+      );
+
+      if (existingProductIndex !== -1) {
+        state.cartItems.splice(existingProductIndex, 1);
+      } else {
+        console.error('Product is no longer in the cart');
+      }
+
+      localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
+    },
   },
 });
 
 export default cartSlice.reducer;
 
-export const { addItemToCart, updateItemQty } = cartSlice.actions;
+export const { addItemToCart, updateItemQty, removeItemFromCart } =
+  cartSlice.actions;

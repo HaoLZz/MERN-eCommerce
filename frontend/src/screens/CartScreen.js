@@ -11,7 +11,7 @@ import {
   ListGroupItem,
 } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateItemQty } from '../features/cart/cartSlice';
+import { updateItemQty, removeItemFromCart } from '../features/cart/cartSlice';
 import Message from '../components/Message';
 
 const CartScreen = () => {
@@ -24,6 +24,9 @@ const CartScreen = () => {
     dispatch(updateItemQty({ newQty, product }));
   };
 
+  const removeItemHandler = (product) => {
+    dispatch(removeItemFromCart(product));
+  };
   return (
     <Row>
       <Col md={8}>
@@ -57,7 +60,11 @@ const CartScreen = () => {
                     ></Form.Control>
                   </Col>
                   <Col md={2}>
-                    <Button type="button" variant="ligth" onClick={(f) => f}>
+                    <Button
+                      type="button"
+                      variant="ligth"
+                      onClick={() => removeItemHandler(item.product)}
+                    >
                       <i className="fas fa-trash"></i>
                     </Button>
                   </Col>
