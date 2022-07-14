@@ -1,22 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchProductById,
   selectProductById,
 } from '../features/products/productsSlice';
-import { Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap';
+import { addItemToCart } from '../features/cart/cartSlice';
+import {
+  Row,
+  Col,
+  Image,
+  ListGroup,
+  Card,
+  Button,
+  Form,
+} from 'react-bootstrap';
 import Rating from '../components/Rating';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 
 const ProductScreen = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const product = useSelector((state) => selectProductById(state, id));
+  const dispatch = useDispatch();
+
   const [fetchProductStatus, setFetchProductStatus] = useState('idle');
   const [error, setError] = useState(null);
 
-  const dispatch = useDispatch();
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -33,6 +45,11 @@ const ProductScreen = () => {
     };
     fetchProduct();
   }, [dispatch, id, fetchProductStatus]);
+
+  const addToCartHandler = () => {
+    navigate(`/cart/${id}/qty=${qty}`);
+    dispatch(addItemToCart(product, qty));
+  };
 
   return (
     <>
@@ -85,10 +102,33 @@ const ProductScreen = () => {
                     </Col>
                   </Row>
                 </ListGroup.Item>
+
+                {product.countInStock > 0 && (
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Qty</Col>
+                      <Col>
+                        <Form.Control
+                          as="select"
+                          value={qty}
+                          onChange={(e) => setQty(e.target.value)}
+                        >
+                          {[...Array(product.countInStock).keys()].map((i) => (
+                            <option key={i + 1} value={i + 1}>
+                              {i + 1}
+                            </option>
+                          ))}
+                        </Form.Control>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                )}
+
                 <ListGroup.Item>
                   <Button
                     className="btn-block"
                     type="button"
+                    onClick={addToCartHandler}
                     disabled={product.countInStock === 0}
                   >
                     Add To Cart
