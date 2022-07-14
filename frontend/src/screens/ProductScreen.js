@@ -5,6 +5,7 @@ import {
   fetchProductById,
   selectProductById,
 } from '../features/products/productsSlice';
+import { addItemToCart } from '../features/cart/cartSlice';
 import {
   Row,
   Col,
@@ -47,6 +48,7 @@ const ProductScreen = () => {
 
   const addToCartHandler = () => {
     navigate(`/cart/${id}/qty=${qty}`);
+    dispatch(addItemToCart(product, qty));
   };
 
   return (
