@@ -5,7 +5,15 @@ import {
   fetchProductById,
   selectProductById,
 } from '../features/products/productsSlice';
-import { Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap';
+import {
+  Row,
+  Col,
+  Image,
+  ListGroup,
+  Card,
+  Button,
+  Form,
+} from 'react-bootstrap';
 import Rating from '../components/Rating';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -13,10 +21,12 @@ import Message from '../components/Message';
 const ProductScreen = () => {
   const { id } = useParams();
   const product = useSelector((state) => selectProductById(state, id));
+  const dispatch = useDispatch();
+
   const [fetchProductStatus, setFetchProductStatus] = useState('idle');
   const [error, setError] = useState(null);
 
-  const dispatch = useDispatch();
+  const [qty, setQty] = useState(0);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -85,6 +95,27 @@ const ProductScreen = () => {
                     </Col>
                   </Row>
                 </ListGroup.Item>
+
+                {product.countInStock > 0 && (
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Qty</Col>
+                      <Col>
+                        <Form.Control
+                          as="select"
+                          onChange={(e) => setQty(e.target.value)}
+                        >
+                          {[...Array(product.countInStock).keys()].map((i) => (
+                            <option key={i + 1} value={i + 1}>
+                              {i + 1}
+                            </option>
+                          ))}
+                        </Form.Control>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                )}
+
                 <ListGroup.Item>
                   <Button
                     className="btn-block"
